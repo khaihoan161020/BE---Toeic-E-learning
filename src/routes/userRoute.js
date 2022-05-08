@@ -31,8 +31,8 @@ router.post(
     userController.getAll
 );
 
-router.patch(
-    '/user/:id',
+router.post(
+    '/user/update',
     tokenHandler.verifyAdminToken,
     userController.update
 )

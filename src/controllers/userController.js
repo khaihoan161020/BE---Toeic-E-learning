@@ -1,7 +1,7 @@
 const CryptoJS = require('crypto-js');
 const jwt = require('jsonwebtoken');
 const { User } = require('../models');
-
+const { tokenDecode } = require('../handlers/tokenDecode')
 exports.login = async (req, res) => {
     try {
         const user = await User.findOne({
@@ -66,19 +66,21 @@ exports.register = async (req, res) => {
 
 exports.update = async (req, res) => {
     try {
-        const { id } = req.params;
-        let user = await User.findOne({_id: id}) // tim vocab da tao 
-        if(user && user._id.toString() !== req.params.id) return res.status(403).json('User has been created')
+        // const { id } = req.params;
+
+        const id = req.body.id
+      
 
         const userUpdate = await User.findByIdAndUpdate(id,{
-            isDeleted: req.body.isDeleted,
+            dob: req.body.dob,
+            email: req.body.email,
             score: req.body.score,
-            isAdmin: req.body.isAdmin,
+            isDeleted: req.body.isDeleted,
             updatedAt: new Date()
         })
         res.status(200).json({
             status: 1,
-            message: "Update user successfully",
+            message: "You has updated user successfully",
             data: userUpdate
         })
     } catch(err) {
@@ -150,10 +152,10 @@ exports.getAllBasic = async (req, res) => {
         });
     }
 }
+
 exports.getAll = async (req, res) => {
     try {
         const { page, limit, type, value } = req.body;
-
         let data;
         let count;
         if (type === "username") {
