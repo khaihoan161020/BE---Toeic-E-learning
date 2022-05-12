@@ -7,19 +7,18 @@ const vocabSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    data:  {
-            example: {
-                type: String,
-                default: null
-            },
-            type: {
-                type: String,
-                required: true,
-            },
-            means: {type: Array},
-            type: Array
-        }
-    ,
+   
+    example: {
+        type: String,
+        default: null
+    },
+    type: {
+        type: String,
+        required: true,
+    },
+    means: {type: String},
+            
+
     creator: {
         type: Schema.Types.ObjectId,
         ref: 'User',

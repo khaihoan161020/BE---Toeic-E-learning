@@ -13,7 +13,9 @@ exports.create = async (req, res) => {
 
         const newVocab = new Vocab({
             name: req.body.name,
-            data: req.body.data,
+            example: req.body.example,
+            type: req.body.type,
+            means: req.body.means,
             creator: req.user._id,
         });
         await newVocab.save();
@@ -52,6 +54,7 @@ exports.getAll = async (req, res) => {
 
         let data;
         let count;
+        console.log('type:', type)
         if (type === "name") {
             data = await Vocab.find({ name: { $regex: value, $options: "i" } })
                 .populate("creator", "username score")
@@ -63,19 +66,13 @@ exports.getAll = async (req, res) => {
             }).count();
         }
         if (type === "type") {
-            data = await Vocab.find({
-                data: {
-                    $elemMatch: { type: value },
-                },
-            })
+            data = await Vocab.find({ type: { $regex: value, $options: "i" } })
                 .populate("creator", "username score")
                 .skip(limit * page - limit)
                 .limit(limit)
                 .sort("-createdAt");
             count = await Vocab.find({
-                data: {
-                    $elemMatch: { type: value },
-                },
+                type: { $regex: value, $options: "i" },
             }).count();
         }
 

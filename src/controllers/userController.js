@@ -69,8 +69,7 @@ exports.update = async (req, res) => {
         // const { id } = req.params;
 
         const id = req.body.id
-      
-
+    
         const userUpdate = await User.findByIdAndUpdate(id,{
             dob: req.body.dob,
             email: req.body.email,
@@ -185,10 +184,10 @@ exports.getAll = async (req, res) => {
 exports.deleteById = async (req, res) => {
     try {
         const { id } = req.params;
-        
         await User.findByIdAndDelete(id);
         res.status(200).json({
-            status: 1
+            status: 1,
+            message: "Deleted successfully"
         });
     } catch(err) {
         res.status(500).json({
