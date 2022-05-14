@@ -1,28 +1,19 @@
-const { Vocab } = require("../models");
+const { Reading } = require("../models");
 
 exports.create = async (req, res) => {
     try {
-        const vocab = await Vocab.findOne({
-            name: req.body.name,
-        });
+    
 
-        if (vocab)
-            return res
-                .status(401)
-                .json({ status: 2, message: "This vocab has been created" });
-
-        const newVocab = new Vocab({
-            name: req.body.name,
-            example: req.body.example,
-            type: req.body.type,
-            means: req.body.means,
+        const newReading = new Reading({
+            question: req.body.question,
+            data: req.body.data,
             creator: req.user._id,
         });
-        await newVocab.save();
+        await newReading.save();
         res.status(201).json({
             status: 1,
-            message: "Create vocab success",
-            data: newVocab,
+            message: "Create Quiz Reading Success",
+            data: newReading,
         });
     } catch (err) {
         res.status(500).json({
@@ -34,7 +25,7 @@ exports.create = async (req, res) => {
 
 exports.getAllBasic = async (req, res) => {
     try {
-        const data = await Vocab.find({}).sort("-createdAt");
+        const data = await Reading.find({}).sort("-createdAt");
         res.status(200).json({
             status: 1,
             data: data,
@@ -54,25 +45,24 @@ exports.getAll = async (req, res) => {
 
         let data;
         let count;
-        console.log('type:', type)
-        if (type === "name") {
-            data = await Vocab.find({ name: { $regex: value, $options: "i" } })
+        if (type === "question") {
+            data = await Reading.find({ question: { $regex: value, $options: "i" } })
                 .populate("creator", "username score")
                 .skip(limit * page - limit)
                 .limit(limit)
                 .sort("-createdAt");
-            count = await Vocab.find({
-                name: { $regex: value, $options: "i" },
+            count = await Reading.find({
+                question: { $regex: value, $options: "i" },
             }).count();
         }
         if (type === "type") {
-            data = await Vocab.find({ type: { $regex: value, $options: "i" } })
+            data = await Reading.find({ question: { $regex: value, $options: "i" } })
                 .populate("creator", "username score")
                 .skip(limit * page - limit)
                 .limit(limit)
                 .sort("-createdAt");
             count = await Vocab.find({
-                type: { $regex: value, $options: "i" },
+                question: { $regex: value, $options: "i" },
             }).count();
         }
 
@@ -92,20 +82,16 @@ exports.getAll = async (req, res) => {
 };
 exports.update = async (req, res) => {
     try {
-        let vocab = await Vocab.findOne({ name: req.body.name }); // tim vocab da tao
-        if (vocab && vocab._id.toString() !== req.params.id)
-            return res.status(403).json("Vocab has been created");
-
-        const updateVocab = await Vocab.findByIdAndUpdate(id, {
-            example: req.body.example,
-            type: req.body.type,
-            means: req.body.means,
+        const id = req.body.id
+        const updateReading = await Reading.findByIdAndUpdate(id, {
+            question: req.body.question,
+            data: req.body.data,
             updatedAt: new Date(),
         });
         res.status(200).json({
             status: 1,
             message: "Update successfully",
-            data: updateVocab,
+            data: updateReading,
         });
     } catch (err) {
         console.log(err);
@@ -115,10 +101,10 @@ exports.update = async (req, res) => {
 exports.deleteById = async (req, res) => {
     try {
         const { id } = req.params;
-        await Vocab.findByIdAndDelete(id);
+        await Reading.findByIdAndDelete(id);
         res.status(200).json({
             CODE: 1,
-            message: "This vocab is deleted successfully",
+            message: "This reading is deleted successfully",
         });
     } catch (err) {
         console.log(err);

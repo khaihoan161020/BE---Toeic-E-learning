@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const { vocabController } = require('../controllers');
+const { readingController } = require('../controllers');
 const tokenHandler = require('../handlers/tokenHandler');
 
 
@@ -7,26 +7,26 @@ const tokenHandler = require('../handlers/tokenHandler');
 router.post(
     '/', 
     tokenHandler.verifyToken,
-    vocabController.create
+    readingController.create
 );
 router.get(
     '/getAllBasic', 
     tokenHandler.verifyToken,
-    vocabController.getAllBasic
+    readingController.getAllBasic
 );
 router.post(
     '/getAll', 
     tokenHandler.verifyToken,
-    vocabController.getAll
+    readingController.getAll
 );
 router.post(
     '/updateInfo', 
     tokenHandler.verifyToken,
-    vocabController.update
+    readingController.update
 );
 router.delete(
     '/:id', 
     tokenHandler.verifyToken,
-    vocabController.deleteById
+    readingController.deleteById
 );
 module.exports = router;
