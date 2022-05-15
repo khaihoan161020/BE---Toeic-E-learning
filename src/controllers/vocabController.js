@@ -93,10 +93,10 @@ exports.getAll = async (req, res) => {
 exports.update = async (req, res) => {
     try {
         let vocab = await Vocab.findOne({ name: req.body.name }); // tim vocab da tao
-        if (vocab && vocab._id.toString() !== req.params.id)
-            return res.status(403).json("Vocab has been created");
-
-        const updateVocab = await Vocab.findByIdAndUpdate(id, {
+        // if (vocab && vocab._id.toString() !== req.params.id)
+        //     return res.status(403).json("Vocab has been created");
+        // const name = req.body.name
+        const updateVocab = await Vocab.findByIdAndUpdate(vocab.id, {
             example: req.body.example,
             type: req.body.type,
             means: req.body.means,

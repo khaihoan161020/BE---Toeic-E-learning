@@ -6,6 +6,7 @@ const vocabSchema = new mongoose.Schema({
     name: {
         type: String,
         required: true,
+        unique: true
     },
    
     example: {
@@ -16,7 +17,7 @@ const vocabSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    means: {type: String},
+    means: {type: Array},
             
 
     creator: {
