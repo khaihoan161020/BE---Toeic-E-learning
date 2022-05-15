@@ -7,7 +7,7 @@ const readingSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    data: {
+    data: [{
         answer: {
             type: String,
             required: true,
@@ -15,10 +15,9 @@ const readingSchema = new mongoose.Schema({
         isCorrect: {
             type: Boolean,
             required: true,
-        },
-        type: Array,
-        default: null
-    },
+        }
+    }
+    ],
     creator: {
         type: Schema.Types.ObjectId,
         ref: 'User',
