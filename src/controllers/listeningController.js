@@ -107,7 +107,7 @@ exports.deleteById = async (req, res) => {
         const { id } = req.params;
         await Listening.findByIdAndDelete(id);
         res.status(200).json({
-            CODE: 1,
+            status: 1,
             message: "This reading is deleted successfully",
         });
     } catch (err) {
