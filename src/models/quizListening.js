@@ -8,8 +8,9 @@ const listeningSchema = new mongoose.Schema({
         required: true,
     },
     audio: {
-        type: String,
-        required: true,
+        type: Object,
+        name: {type: String},
+        url: {type: String}
     },
     data: [{
         answer: {
