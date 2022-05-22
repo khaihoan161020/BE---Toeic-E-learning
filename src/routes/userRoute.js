@@ -41,6 +41,11 @@ router.put(
     tokenHandler.verifyAdminToken,
     userController.uploadImage
 )
+router.post(
+    '/checkToken',
+    tokenHandler.verifyToken,
+    userController.checkToken
+)
 router.delete(
     '/user/:id', 
     tokenHandler.verifyAdminToken ,
