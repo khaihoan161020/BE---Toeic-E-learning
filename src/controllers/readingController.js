@@ -1,9 +1,7 @@
-const { Reading } = require("../models");
-
+const { Reading, UserReading} = require("../models");
+const { tokenDecode } = require("../handlers/tokenDecode");
 exports.create = async (req, res) => {
     try {
-    
-
         const newReading = new Reading({
             question: req.body.question,
             data: req.body.data,
@@ -46,7 +44,9 @@ exports.getAll = async (req, res) => {
         let data;
         let count;
         if (type === "question") {
-            data = await Reading.find({ question: { $regex: value, $options: "i" } })
+            data = await Reading.find({
+                question: { $regex: value, $options: "i" },
+            })
                 .populate("creator", "username score")
                 .skip(limit * page - limit)
                 .limit(limit)
@@ -56,7 +56,9 @@ exports.getAll = async (req, res) => {
             }).count();
         }
         if (type === "type") {
-            data = await Reading.find({ question: { $regex: value, $options: "i" } })
+            data = await Reading.find({
+                question: { $regex: value, $options: "i" },
+            })
                 .populate("creator", "username score")
                 .skip(limit * page - limit)
                 .limit(limit)
@@ -82,7 +84,7 @@ exports.getAll = async (req, res) => {
 };
 exports.update = async (req, res) => {
     try {
-        const id = req.body.id
+        const id = req.body.id;
         const updateReading = await Reading.findByIdAndUpdate(id, {
             question: req.body.question,
             data: req.body.data,
@@ -106,6 +108,45 @@ exports.deleteById = async (req, res) => {
             CODE: 1,
             message: "This reading is deleted successfully",
         });
+    } catch (err) {
+        console.log(err);
+        res.status(500).json(err);
+    }
+};
+exports.quizReading = async (req, res) => {
+    try {
+        data = await Reading.find({})
+            .populate("creator", "username score")
+            .skip(0)
+            .limit(4)
+            .sort("-createdAt");
+        res.status(200).json({
+            status: 1,
+            data: data,
+        });
+    } catch (err) {
+        console.log(err);
+        res.status(500).json(err);
+    }
+};
+exports.postQuiz = async (req, res) => {
+    try {
+        const tokenDecoded = tokenDecode(req);
+        if (tokenDecoded) {
+            // const user = await User.findById(tokenDecoded.id);
+            
+        const newReading = new UserReading({
+            listQuiz: req.body.listQuiz,
+            countCorrect: req.body.countCorrect,
+            creator: req.user._id
+        });
+        await newReading.save();
+            
+            res.status(201).json({
+                status: 1,
+                message: "Success",
+            });
+        }
     } catch (err) {
         console.log(err);
         res.status(500).json(err);

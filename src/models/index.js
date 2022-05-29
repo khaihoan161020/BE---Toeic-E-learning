@@ -3,4 +3,5 @@ module.exports = {
     Vocab: require('./vocab'),
     Reading: require('./quizReading'),
     Listening: require('./quizListening'),
+    UserReading: require('./userReading'),
 }
