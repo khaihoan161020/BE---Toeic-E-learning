@@ -115,11 +115,21 @@ exports.deleteById = async (req, res) => {
 };
 exports.quizReading = async (req, res) => {
     try {
+        // const count = UserReading.find({listQuiz}).count
+        const tokenDecoded = tokenDecode(req);
+
+        const readOfUser = await  UserReading.find({ creator: tokenDecoded.id})
+        let count = 0;
+
+        readOfUser.forEach(item => {
+            count += item.listQuiz.length
+        })
+
         data = await Reading.find({})
             .populate("creator", "username score")
-            .skip(0)
+            .skip(count)
             .limit(4)
-            .sort("-createdAt");
+            .sort("createdAt");
         res.status(200).json({
             status: 1,
             data: data,

@@ -1,6 +1,5 @@
 const jsonwebtoken = require("jsonwebtoken");
 const tokenDecode = (req) => {
-    console.log('here is call')
     const bearerHeader = req.headers['authorization'];
     if (bearerHeader) {
         const bearer = bearerHeader.split(' ')[1];
