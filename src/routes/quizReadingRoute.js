@@ -39,4 +39,9 @@ router.post(
     tokenHandler.verifyToken,
     readingController.postQuiz
 );
+router.post(
+    '/getDataQuiz',
+    tokenHandler.verifyToken,
+    readingController.getQuizUser
+)
 module.exports = router;

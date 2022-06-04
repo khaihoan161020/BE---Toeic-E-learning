@@ -1,10 +1,12 @@
-const { Reading, UserReading} = require("../models");
+const { Reading, UserReading } = require("../models");
 const { tokenDecode } = require("../handlers/tokenDecode");
+const { shuffle } = require("../handlers/shufferArray");
 exports.create = async (req, res) => {
     try {
         const newReading = new Reading({
             question: req.body.question,
             data: req.body.data,
+            solution: req.body.solution,
             creator: req.user._id,
         });
         await newReading.save();
@@ -118,12 +120,12 @@ exports.quizReading = async (req, res) => {
         // const count = UserReading.find({listQuiz}).count
         const tokenDecoded = tokenDecode(req);
 
-        const readOfUser = await  UserReading.find({ creator: tokenDecoded.id})
+        const readOfUser = await UserReading.find({ creator: tokenDecoded.id });
         let count = 0;
 
-        readOfUser.forEach(item => {
-            count += item.listQuiz.length
-        })
+        readOfUser.forEach((item) => {
+            count += item.listQuiz.length;
+        });
 
         data = await Reading.find({})
             .populate("creator", "username score")
@@ -132,7 +134,7 @@ exports.quizReading = async (req, res) => {
             .sort("createdAt");
         res.status(200).json({
             status: 1,
-            data: data,
+            data: shuffle(data),
         });
     } catch (err) {
         console.log(err);
@@ -144,17 +146,53 @@ exports.postQuiz = async (req, res) => {
         const tokenDecoded = tokenDecode(req);
         if (tokenDecoded) {
             // const user = await User.findById(tokenDecoded.id);
-            
-        const newReading = new UserReading({
-            listQuiz: req.body.listQuiz,
-            countCorrect: req.body.countCorrect,
-            creator: req.user._id
-        });
-        await newReading.save();
-            
+
+            const newReading = new UserReading({
+                listQuiz: req.body.listQuiz,
+                creator: req.user._id,
+            });
+            await newReading.save();
+
             res.status(201).json({
                 status: 1,
                 message: "Success",
+            });
+        }
+    } catch (err) {
+        console.log(err);
+        res.status(500).json(err);
+    }
+};
+exports.getQuizUser = async (req, res) => {
+    try {
+        const { page } = req.body;
+        const tokenDecoded = tokenDecode(req);
+        if (tokenDecoded) {
+            // const user = await User.findById(tokenDecoded.id);
+            const listAns = [];
+            data = await UserReading.find({ creator: tokenDecoded.id })
+                .populate({
+                    path: "listQuiz",
+                    populate: { path: "questionId" },
+                })
+                .skip(page*3 - 3)
+                .limit(3)
+                .sort("createdAt");
+
+            data.forEach((item) => {
+                item.listQuiz.forEach((el) => {
+                    listAns.push(el);
+                });
+            });
+            count = await UserReading.find({ creator: tokenDecoded.id })
+                .count();
+            res.status(201).json({
+                status: 1,
+                message: "Success",
+                data: {
+                    count: count*4,
+                    rows: listAns,
+                },
             });
         }
     } catch (err) {

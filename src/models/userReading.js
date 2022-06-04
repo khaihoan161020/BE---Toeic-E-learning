@@ -5,19 +5,18 @@ const Schema = mongoose.Schema;
 const userReadingSchema = new mongoose.Schema({
     listQuiz : [{
         questionId: {
-            type: String,
+            type: Schema.Types.ObjectId,
+            ref: 'Reading',
             required: true,
         },
         answerId: {
-            type: String,
-            required: true,
+            type: String || null
+        },
+        correctPick: {
+            type: Boolean || null,
         }
         }]
     ,
-    countCorrect: {
-        type: Number,
-        required: true,
-    },
     creator: {
         type: Schema.Types.ObjectId,
         ref: 'User',
