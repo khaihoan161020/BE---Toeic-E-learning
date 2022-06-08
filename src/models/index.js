@@ -5,4 +5,5 @@ module.exports = {
     Listening: require('./quizListening'),
     UserReading: require('./userReading'),
     UserListening: require('./userListening'),
+    UserVocab: require('./userVocab'),
 }

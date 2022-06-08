@@ -17,9 +17,10 @@ const vocabSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    means: {type: Array},
-            
-
+    means: {
+        type: String,
+        required: true,
+    },
     creator: {
         type: Schema.Types.ObjectId,
         ref: 'User',

@@ -29,4 +29,14 @@ router.delete(
     tokenHandler.verifyToken,
     vocabController.deleteById
 );
+router.post(
+    '/quiz', 
+    tokenHandler.verifyToken,
+    vocabController.quizReading
+);
+router.post(
+    '/postQuiz', 
+    tokenHandler.verifyToken,
+    vocabController.postQuiz
+);
 module.exports = router;
