@@ -186,6 +186,7 @@ exports.getAll = async (req, res) => {
         const { page, limit, type, value } = req.body;
         let data;
         let count;
+      
         if (type === "username") {
             data = await User.find({
                 username: { $regex: value, $options: "i" },
@@ -196,8 +197,31 @@ exports.getAll = async (req, res) => {
             count = await User.find({
                 username: { $regex: value, $options: "i" },
             }).count();
+            
         }
+        if (type === "email") {
+            data = await User.find({
+                email: { $regex: value, $options: "i" },
+            })
+                .skip(limit * page - limit)
+                .limit(limit)
+                .sort("-createdAt");
+            count = await User.find({
+                email: { $regex: value, $options: "i" },
+            }).count();
+        }
+        if (type === "isDeleted") {
+            data = await User.find({
+                isDeleted: value,
+            })
+                .skip(limit * page - limit)
+                .limit(limit)
+                .sort("-createdAt");
+            count = await User.find({
+                isDeleted: value,
+            }).count();
 
+        }
         res.status(201).json({
             status: 1,
             data: {
