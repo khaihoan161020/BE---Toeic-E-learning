@@ -6,27 +6,27 @@ const tokenHandler = require('../handlers/tokenHandler');
 
 router.post(
     '/', 
-    tokenHandler.verifyToken,
+    tokenHandler.verifyAdminToken,
     vocabController.create
 );
 router.get(
     '/getAllBasic', 
-    tokenHandler.verifyToken,
+    tokenHandler.verifyAdminToken,
     vocabController.getAllBasic
 );
 router.post(
     '/getAll', 
-    tokenHandler.verifyToken,
+    tokenHandler.verifyAdminToken,
     vocabController.getAll
 );
 router.post(
     '/updateInfo', 
-    tokenHandler.verifyToken,
+    tokenHandler.verifyAdminToken,
     vocabController.update
 );
 router.delete(
     '/:id', 
-    tokenHandler.verifyToken,
+    tokenHandler.verifyAdminToken,
     vocabController.deleteById
 );
 router.post(

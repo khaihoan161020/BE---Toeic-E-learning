@@ -1,6 +1,7 @@
 const { Vocab, UserVocab } = require("../models");
 const { tokenDecode } = require("../handlers/tokenDecode");
 const { shuffle } = require("../handlers/shufferArray");
+const moment = require('moment')
 exports.create = async (req, res) => {
     try {
         const vocab = await Vocab.findOne({
@@ -131,17 +132,30 @@ exports.quizReading = async (req, res) => {
         // const count = UserReading.find({listQuiz}).count
         const tokenDecoded = tokenDecode(req);
         const total = 10;
-        const readOfUser = await UserVocab.find({ creator: tokenDecoded.id });
+        const readOfUser = await UserVocab.find({ creator: tokenDecoded.id }).populate("vocabId");
         let count = 0;
-        readOfUser.forEach((item) => {
-            count += item.listQuiz.length;
-        });
-        
+        const vocabHistoryComeBack = readOfUser.filter(item => {
+            if (item.mode === 0) {
+                if ((moment(item.updatedAt).add(1, 'days')).isBefore(moment())) {
+                    return item
+                }
+            }
+            else if (item.mode === 1) {
+                if ((moment(item.updatedAt).add(2, 'days')).isBefore(moment())) {
+                    return item
+                }
+            }
+            else if (item.mode === 2) {
+                if ((moment(item.updatedAt).add(3, 'days')).isBefore(moment())) {
+                    return item
+                }
+            }
+        })
         const last_id = 0
         data = await Vocab.find({})
             .populate("creator", "username score")
-            .skip(count)
-            .limit(4)
+            .skip(readOfUser.length)
+            .limit(4 - vocabHistoryComeBack.length)
             .sort("createdAt");
         const maxVolumn = await Vocab.find({}).count()
         
@@ -149,7 +163,36 @@ exports.quizReading = async (req, res) => {
        
     
         const resData = []
-        var responseArray = await Promise.all(data.map(async (item) => {
+  
+        var responseArray1 = await Promise.all(vocabHistoryComeBack.map(async (item) => {
+            var random = Math.floor(Math.random() * (maxVolumn - 3))
+            const randomMeans =  await Vocab.find({})
+            .select('means _id')
+            .skip(random)
+            .limit(3)
+            .sort("createdAt");
+            
+            const deepCloneItem = JSON.parse(JSON.stringify(item.vocabId))
+          
+            const meansUpdate = [{
+                name: item.vocabId.means,
+                isCorrect: true
+            }]
+            randomMeans.forEach(meanFake => {
+                meansUpdate.push({
+                    name: meanFake.means,
+                    isCorrect: false
+                })
+            })
+           
+            resData.push({
+                ...deepCloneItem,
+                means: shuffle(meansUpdate),
+                count: 0
+            })
+            return item
+        }))
+        var responseArray2 = await Promise.all(data.map(async (item) => {
             var random = Math.floor(Math.random() * (maxVolumn - 3))
             const randomMeans =  await Vocab.find({})
             .select('means _id')
@@ -178,7 +221,6 @@ exports.quizReading = async (req, res) => {
             })
             return item
         }))
-        console.log('test')
         res.status(200).json({
             status: 1,
             data: shuffle(resData),
@@ -195,12 +237,15 @@ exports.postQuiz = async (req, res) => {
         const tokenDecoded = tokenDecode(req);
         if (tokenDecoded) {
             // const user = await User.findById(tokenDecoded.id);
-
-            const newUserVocab = new UserVocab({
-                listQuiz: req.body.listQuiz,
-                creator: req.user._id,
-            });
-            await newUserVocab.save();
+            const arr = req.body.listQuiz;
+            for ( item of arr ) {
+                const newUserVocab = new UserVocab({
+                    vocabId: item.vocabId,
+                    mode: item.mode,
+                    creator: req.user._id,
+                });
+                await newUserVocab.save();
+            }
 
             res.status(201).json({
                 status: 1,
