@@ -4,6 +4,7 @@ const { shuffle } = require("../handlers/shufferArray");
 const moment = require('moment')
 exports.create = async (req, res) => {
     try {
+        const tokenDecoded = tokenDecode(req);
         const vocab = await Vocab.findOne({
             name: req.body.name,
         });
@@ -12,13 +13,12 @@ exports.create = async (req, res) => {
             return res
                 .status(401)
                 .json({ status: 2, message: "This vocab has been created" });
-
+    
         const newVocab = new Vocab({
             name: req.body.name,
-            example: req.body.example,
             type: req.body.type,
             means: req.body.means,
-            creator: req.user._id,
+            creator: tokenDecoded.id,
         });
         await newVocab.save();
         res.status(201).json({
